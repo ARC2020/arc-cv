@@ -104,46 +104,40 @@ class AIConsumer(threading.Thread):
         
         workerPool.wait_completion()
         print("Completed all tasks.")
-
-def main(_):
-    obj = AIConsumer(3)
-    tv_utils.set_gpus_to_use()
-
-    runs_dir = 'RUNS'
-    obj.logdir = os.path.join(runs_dir, default_run)
-
-    # Loading hyperparameters from logdir
-    obj.hypes = tv_utils.load_hypes_from_logdir(obj.logdir, base_path='hypes')
-
-    print("Info: Hypes loaded successfully.")
-
-    # Loading tv modules (encoder.py, decoder.py, eval.py) from logdir
-    modules = tv_utils.load_modules_from_logdir(obj.logdir)
-    print("Info: Modules loaded successfully. Starting to build tf graph.")
-
-    # Create tf graph and build module.
-    with tf.Graph().as_default():
-
-        # Create placeholder for input
-        image_pl_i = tf.placeholder(tf.float32)
-        image = tf.expand_dims(image_pl_i, 0)
-        obj.image_pl = image_pl_i
-
-        # build Tensorflow graph using the model from logdir
-        obj.prediction = core.build_inference_graph(obj.hypes, modules,
-                                                image=image)
-
-        print("Info: Graph build successfully.")
-        obj.sessions = []
-        for i in range(obj.numThreads):
-            obj.sessions.append(obj.createSession())
-
-        print("Sessions created.")
     
-    obj.start()
-    
+    def begin(self):
+        tv_utils.set_gpus_to_use()
 
+        runs_dir = 'RUNS'
+        self.logdir = os.path.join(runs_dir, default_run)
 
-if __name__ == "__main__":
-    tf.app.run()
+        # Loading hyperparameters from logdir
+        self.hypes = tv_utils.load_hypes_from_logdir(self.logdir, base_path='hypes')
+
+        print("Info: Hypes loaded successfully.")
+
+        # Loading tv modules (encoder.py, decoder.py, eval.py) from logdir
+        modules = tv_utils.load_modules_from_logdir(self.logdir)
+        print("Info: Modules loaded successfully. Starting to build tf graph.")
+
+        # Create tf graph and build module.
+        with tf.Graph().as_default():
+
+            # Create placeholder for input
+            image_pl_i = tf.placeholder(tf.float32)
+            image = tf.expand_dims(image_pl_i, 0)
+            self.image_pl = image_pl_i
+
+            # build Tensorflow graph using the model from logdir
+            self.prediction = core.build_inference_graph(self.hypes, modules,
+                                                    image=image)
+
+            print("Info: Graph build successfully.")
+            self.sessions = []
+            for i in range(self.numThreads):
+                self.sessions.append(self.createSession())
+
+            print("Sessions created.")
+        
+        self.start()
     
