@@ -6,22 +6,31 @@ if IS_PY2:
 else:
     from queue import Queue
 
+import threading
 from threading import Thread
 
 
 class Worker(Thread):
     """ Thread executing tasks from a given tasks queue """
-    def __init__(self, tasks):
+    def __init__(self, tasks, session):
         Thread.__init__(self)
         self.tasks = tasks
+        self.session = session
         self.daemon = True
+        self._stop_event = threading.Event()
         self.start()
+
+    def stop(self):
+        self._stop_event.set()
+
+    def stopped(self):
+        return self._stop_event.is_set()
 
     def run(self):
         while True:
             func, args, kargs = self.tasks.get()
             try:
-                func(*args, **kargs)
+                func(*args, self.session)
             except Exception as e:
                 # An exception happened in this thread
                 print(e)
@@ -32,10 +41,16 @@ class Worker(Thread):
 
 class ThreadPool:
     """ Pool of threads consuming tasks from a queue """
-    def __init__(self, num_threads):
-        self.tasks = Queue(num_threads)
-        for _ in range(num_threads):
-            Worker(self.tasks)
+    def __init__(self, num_threads, sessions):
+        try:
+            if len(sessions) != num_threads:
+                raise ValueError("Not enough sessions for threads")
+            self.tasks = Queue(num_threads)
+            self.workers = []
+            for index in range(num_threads):
+                self.workers.append(Worker(self.tasks, sessions[index]))
+        except ValueError as e:
+            print(e)
 
     def add_task(self, func, *args, **kargs):
         """ Add a task to the queue """
@@ -45,6 +60,11 @@ class ThreadPool:
         """ Add a list of tasks to the queue """
         for args in args_list:
             self.add_task(func, args)
+
+    def shutdown(self):
+        for index in range(num_threads):
+            self.workers[index].stop()
+            self.workers[index].join()
 
     def wait_completion(self):
         """ Wait for completion of all the tasks in the queue """

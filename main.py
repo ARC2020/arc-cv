@@ -12,6 +12,7 @@ import numpy as np
 import scipy as scp
 import scipy.misc
 import tensorflow as tf
+from ThreadPool import ThreadPool
 
 sys.path.insert(1, 'incl')
 
@@ -35,6 +36,7 @@ hypes = 0
 image_pl = 0
 prediction = 0
 sess = 0
+frame_count = 0
 
 def inference(image):
         # Load and resize input image
@@ -46,7 +48,11 @@ def inference(image):
     # print(image_height, image_width)
     image = scp.misc.imresize(image, size=(image_height, image_width),
                                 interp='cubic')
-
+    global frame_count
+    if ((frame_count % 60) < 21):
+        frame_count = frame_count + 1
+        return image
+    
     # Run KittiSeg model on image
     feed = {image_pl: image}
     softmax = prediction['softmax']
@@ -65,9 +71,11 @@ def inference(image):
     street_prediction = output_image > threshold
 
     # Plot the hard prediction as green overlay
-    green_image = tv_utils.fast_overlay(image, street_prediction)
+    # green_image = tv_utils.fast_overlay(image, street_prediction)
+    raw_image_overlay = tv_utils.fast_overlay(image, output_image)
 
-    return green_image
+    frame_count = frame_count + 1
+    return raw_image_overlay
 
     # Save output images to disk.
     # output_base_name = input_image
@@ -126,6 +134,8 @@ def main(_):
     prediction = prediction_i
     global sess
     sess = sess_i
+    global frame_count
+    frame_count = 0
 
     from moviepy.editor import VideoFileClip
     myclip = VideoFileClip('project_video.mp4')#.subclip(40,43)

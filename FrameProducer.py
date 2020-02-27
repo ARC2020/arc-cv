@@ -13,6 +13,7 @@ import cv2
 class FrameProducer(threading.Thread):
     
     def __init__(self):
+        threading.Thread.__init__(self)
         self.pipeline = rs.pipeline()
         self.config = rs.config()
         self.enable()
