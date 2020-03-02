@@ -2,7 +2,7 @@ import tensorflow as tf
 from AIConsumer import AIConsumer
 
 def main(_):
-    frameConsumer = AIConsumer(3)
+    frameConsumer = AIConsumer()
     frameConsumer.begin()
 
 
