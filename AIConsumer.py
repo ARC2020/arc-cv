@@ -14,8 +14,8 @@ from ThreadPool import ThreadPool
 
 class AIConsumer(threading.Thread):
     instance = 0
-    def __init__(self):
-        threading.Thread.__init__(self, network)
+    def __init__(self, network):
+        threading.Thread.__init__(self)
         # load the segmentation network
         self.network = network
         self.net = jetson.inference.segNet(network, [])

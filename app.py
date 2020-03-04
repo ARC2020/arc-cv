@@ -1,6 +1,6 @@
 from AIConsumer import AIConsumer
 
-def main(_):
+def main():
     frameConsumer = AIConsumer("fcn-resnet18-deepscene")
     frameConsumer.start()
 
