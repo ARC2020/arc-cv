@@ -4,6 +4,7 @@ from __future__ import print_function
 
 import jetson.inference
 import jetson.utils
+import cv2
 
 import ctypes
 import sys
@@ -28,29 +29,31 @@ class AIConsumer(threading.Thread):
 
         # allocate the output images for the overlay & mask
         self.img_overlay = jetson.utils.cudaAllocMapped(width * height * 4 * ctypes.sizeof(ctypes.c_float))
-        self.img_mask = jetson.utils.cudaAllocMapped(width/2 * height/2 * 4 * ctypes.sizeof(ctypes.c_float))
+        self.img_mask = jetson.utils.cudaAllocMapped(width//2 * height//2 * 4 * ctypes.sizeof(ctypes.c_float))
         
-        del instance
-        instance = self  
+        if AIConsumer.instance != 0:
+            del AIConsumer.instance
+        AIConsumer.instance = self  
     
     @staticmethod
-    def frame(image):
+    def frame(frame):
         # Convert to CUDA format
+        image = cv2.cvtColor(frame, cv2.COLOR_BGR2RGBA)
         width = image.shape[1]
         height = image.shape[0]
         img = jetson.utils.cudaFromNumpy(image)
 
         # process the segmentation network
-        instance.net.Process(image, width, height)
+        AIConsumer.instance.net.Process(image, width, height)
 
         # generate the overlay and mask
         filter_mode = "linear"
-        instance.net.Overlay(instance.img_overlay, width, height, filter_mode)
-        instance.net.Mask(instance.img_mask, width/2, height/2, filter_mode)
+        AIConsumer.instance.net.Overlay(AIConsumer.instance.img_overlay, width, height, filter_mode)
+        AIConsumer.instance.net.Mask(AIConsumer.instance.img_mask, width/2, height/2, filter_mode)
         
-        print("{:s} | Network {:.0f} FPS\r".format(instance.network, instance.net.GetNetworkFPS()))
+        print("{:s} | Network {:.0f} FPS\r".format(AIConsumer.instance.network, AIConsumer.instance.net.GetNetworkFPS()))
 
-        output_frame = jetson.utils.numpyFromCuda(instance.img_overlay)
+        output_frame = jetson.utils.numpyFromCuda(AIConsumer.instance.img_overlay)
         return output_frame
 
     def run(self):
