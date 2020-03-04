@@ -43,18 +43,21 @@ class AIConsumer(threading.Thread):
         height = image.shape[0]
         img = jetson.utils.cudaFromNumpy(image)
 
+        jetson.utils.cudaDeviceSynchronize()
+
         # process the segmentation network
         AIConsumer.instance.net.Process(image, width, height)
 
         # generate the overlay and mask
-        filter_mode = "linear"
-        AIConsumer.instance.net.Overlay(AIConsumer.instance.img_overlay, width, height, filter_mode)
-        AIConsumer.instance.net.Mask(AIConsumer.instance.img_mask, width/2, height/2, filter_mode)
+#        filter_mode = "linear"
+#        AIConsumer.instance.net.Overlay(AIConsumer.instance.img_overlay, width, height, filter_mode)
+#        AIConsumer.instance.net.Mask(AIConsumer.instance.img_mask, width/2, height/2, filter_mode)
         
-        print("{:s} | Network {:.0f} FPS\r".format(AIConsumer.instance.network, AIConsumer.instance.net.GetNetworkFPS()))
+#        print("{:s} | Network {:.0f} FPS\r".format(AIConsumer.instance.network, AIConsumer.instance.net.GetNetworkFPS()))
 
-        output_frame = jetson.utils.numpyFromCuda(AIConsumer.instance.img_overlay)
-        return output_frame
+#        output_frame = jetson.utils.numpyFromCuda(AIConsumer.instance.img_overlay)
+#        return output_frame
+        return frame
 
     def run(self):
         from moviepy.editor import VideoFileClip
