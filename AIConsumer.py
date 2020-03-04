@@ -21,11 +21,14 @@ class AIConsumer(threading.Thread):
         self.net = jetson.inference.segNet(network, [])
 
         # set the alpha blending value
-        net.SetOverlayAlpha(175.0)
+        self.net.SetOverlayAlpha(175.0)
+
+        width = 1280
+        height = 720
 
         # allocate the output images for the overlay & mask
-        self.img_overlay = jetson.utils.cudaAllocMapped(opt.width * opt.height * 4 * ctypes.sizeof(ctypes.c_float))
-        self.img_mask = jetson.utils.cudaAllocMapped(opt.width/2 * opt.height/2 * 4 * ctypes.sizeof(ctypes.c_float))
+        self.img_overlay = jetson.utils.cudaAllocMapped(width * height * 4 * ctypes.sizeof(ctypes.c_float))
+        self.img_mask = jetson.utils.cudaAllocMapped(width/2 * height/2 * 4 * ctypes.sizeof(ctypes.c_float))
         
         del instance
         instance = self  
