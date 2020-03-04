@@ -1,10 +1,8 @@
-import tensorflow as tf
 from AIConsumer import AIConsumer
 
 def main(_):
-    frameConsumer = AIConsumer()
-    frameConsumer.begin()
-
+    frameConsumer = AIConsumer("fcn-resnet18-deepscene")
+    frameConsumer.start()
 
 if __name__ == "__main__":
-    tf.app.run()
+    main()
