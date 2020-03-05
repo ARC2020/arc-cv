@@ -99,17 +99,12 @@ while True:
         net.Overlay(img_overlay, width, height, opt.filter_mode)
         net.Mask(img_mask, width//2, height//2, opt.filter_mode)
         
-        output_frame = jetson.utils.numpyFromCuda(img_overlay)
-        yield (b'--frame\r\n'
-               b'Content-Type: image/jpeg\r\n\r\n' + frame + b'\r\n')
-        
-
         # render the images
-#        display.BeginRender()
-#        display.Render(img_overlay, width, height)
-#        display.Render(img_mask, width//2, height//2, width)
-#        display.EndRender()
+        display.BeginRender()
+        display.Render(img_overlay, width, height)
+        display.Render(img_mask, width//2, height//2, width)
+        display.EndRender()
 
         # update the title bar
-#        display.SetTitle("{:s} | Network {:.0f} FPS".format(opt.network, net.GetNetworkFPS()))
+        display.SetTitle("{:s} | Network {:.0f} FPS".format(opt.network, net.GetNetworkFPS()))
 
