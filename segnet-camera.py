@@ -32,6 +32,13 @@ import pyrealsense2 as rs
 import numpy as np
 import cv2
 
+from vidgear.gears import NetGear
+
+options = {'flag' : 0, 'copy' : False, 'track' : True}
+
+#change following IP address '192.168.x.xxx' with client's IP address
+server = NetGear(address = '192.168.0.18', port = '5454', protocol = 'tcp',  pattern = 0, receive_mode = False, logging = True, **options)
+
 # parse the command line
 parser = argparse.ArgumentParser(description="Segment a live camera stream using an semantic segmentation DNN.", 
                                                    formatter_class=argparse.RawTextHelpFormatter, epilog=jetson.inference.segNet.Usage())
@@ -45,11 +52,11 @@ parser.add_argument("--width", type=int, default=1280, help="desired width of ca
 parser.add_argument("--height", type=int, default=720, help="desired height of camera stream (default is 720 pixels)")
 
 try:
-        opt = parser.parse_known_args()[0]
+    opt = parser.parse_known_args()[0]
 except:
-        print("")
-        parser.print_help()
-        sys.exit(0)
+    print("")
+    parser.print_help()
+    sys.exit(0)
 
 # load the segmentation network
 net = jetson.inference.segNet(opt.network, sys.argv)
@@ -63,7 +70,6 @@ img_mask = jetson.utils.cudaAllocMapped(opt.width//2 * opt.height//2 * 4 * ctype
 
 # create the camera and display
 #camera = jetson.utils.gstCamera(opt.width, opt.height, opt.camera)
-display = jetson.utils.glDisplay()
 
 # Configure depth and color streams
 pipeline = rs.pipeline()
@@ -75,12 +81,13 @@ pipeline.start(config)
 
 # process frames until user exits
 while True:
-        # capture the image
-        # Wait for a coherent pair of frames: depth and color
+    # capture the image
+    # Wait for a coherent pair of frames: depth and color
+    try:
         frames = pipeline.wait_for_frames()
         color_frame = frames.get_color_frame()
         if not color_frame:
-            continue
+                continue
 
         # Convert images to numpy arrays
         color_image = np.asanyarray(color_frame.get_data())
@@ -98,13 +105,12 @@ while True:
         # generate the overlay and mask
         net.Overlay(img_overlay, width, height, opt.filter_mode)
         net.Mask(img_mask, width//2, height//2, opt.filter_mode)
-        
-        # render the images
-        display.BeginRender()
-        display.Render(img_overlay, width, height)
-        display.Render(img_mask, width//2, height//2, width)
-        display.EndRender()
 
-        # update the title bar
-        display.SetTitle("{:s} | Network {:.0f} FPS".format(opt.network, net.GetNetworkFPS()))
+        output_frame = jetson.utils.cudaToNumpy(img_overlay, width, height)
+        # output = cv2.cvtColor(output_frame, cv2.COLOR_RGBA2BGR)
+        server.send(output_frame)
 
+    except KeyboardInterrupt:
+        break
+
+server.close()
