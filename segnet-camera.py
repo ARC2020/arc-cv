@@ -37,11 +37,11 @@ from vidgear.gears import NetGear
 options = {'flag' : 0, 'copy' : False, 'track' : True}
 
 #change following IP address '192.168.x.xxx' with client's IP address
-server = NetGear(address = '192.168.0.18', port = '5454', protocol = 'tcp',  pattern = 0, receive_mode = False, logging = True, **options)
+server = NetGear(address = '192.168.0.18', colorspace='COLORBGR2RGB', port = '5454', protocol = 'tcp',  pattern = 0, receive_mode = False, logging = True, **options)
 
 # parse the command line
 parser = argparse.ArgumentParser(description="Segment a live camera stream using an semantic segmentation DNN.", 
-                                                   formatter_class=argparse.RawTextHelpFormatter, epilog=jetson.inference.segNet.Usage())
+						   formatter_class=argparse.RawTextHelpFormatter, epilog=jetson.inference.segNet.Usage())
 
 parser.add_argument("--network", type=str, default="fcn-resnet18-voc", help="pre-trained model to load, see below for options")
 parser.add_argument("--filter-mode", type=str, default="linear", choices=["point", "linear"], help="filtering mode used during visualization, options are:\n  'point' or 'linear' (default: 'linear')")
@@ -52,11 +52,11 @@ parser.add_argument("--width", type=int, default=1280, help="desired width of ca
 parser.add_argument("--height", type=int, default=720, help="desired height of camera stream (default is 720 pixels)")
 
 try:
-    opt = parser.parse_known_args()[0]
+	opt = parser.parse_known_args()[0]
 except:
-    print("")
-    parser.print_help()
-    sys.exit(0)
+	print("")
+	parser.print_help()
+	sys.exit(0)
 
 # load the segmentation network
 net = jetson.inference.segNet(opt.network, sys.argv)
@@ -74,7 +74,7 @@ img_mask = jetson.utils.cudaAllocMapped(opt.width//2 * opt.height//2 * 4 * ctype
 # Configure depth and color streams
 pipeline = rs.pipeline()
 config = rs.config()
-config.enable_stream(rs.stream.color, 640, 480, rs.format.bgr8, 30)
+config.enable_stream(rs.stream.color, 640, 480, rs.format.rgba8, 30)
 
 # Start streaming
 pipeline.start(config)
@@ -94,10 +94,10 @@ while True:
 
 
         # Convert to CUDA format
-        image = cv2.cvtColor(color_image, cv2.COLOR_BGR2RGBA)
-        width = image.shape[1]
-        height = image.shape[0]
-        img = jetson.utils.cudaFromNumpy(image)
+        # image = cv2.cvtColor(color_image, cv2.COLOR_BGR2RGBA)
+        width = color_image.shape[1]
+        height = color_image.shape[0]
+        img = jetson.utils.cudaFromNumpy(color_image)
 
         # process the segmentation network
         net.Process(img, width, height, opt.ignore_class)
@@ -106,11 +106,39 @@ while True:
         net.Overlay(img_overlay, width, height, opt.filter_mode)
         net.Mask(img_mask, width//2, height//2, opt.filter_mode)
 
-        output_frame = jetson.utils.cudaToNumpy(img_overlay, width, height)
-        # output = cv2.cvtColor(output_frame, cv2.COLOR_RGBA2BGR)
-        server.send(output_frame)
+        output_frame = jetson.utils.cudaToNumpy(img_overlay, width, height, 4)
+        # output = cv2.cvtColor(output_frame, cv2.COLOR_RGB2BGR)
+        # frame = np.copy(output_frame)
+        # print(type(output_frame))
+        # print(output_frame.dtype)
+        ## print(output_frame.shape)
+
+        output_noalpha = output_frame[:,:,:3]
+        # final_output = np.zeros((width, height))
+
+        # info = np.finfo(output_noalpha.dtype) # Get the information of the incoming image type
+        # data = output_noalpha.astype(np.float32) / (info.max) # normalize the data to 0 - 1
+        # data = 255 * data # Now scale by 255
+        final_output = output_noalpha.astype(np.uint8)
+
+        # cv2.normalize(output_noalpha, final_output, 0, 255, norm_type=cv2.NORM_MINMAX)
+        # final_output = final_output.astype(np.uint8)
+
+        # print(color_image.dtype)
+        # print(color_image)
+        # print("------------------------------")
+        # print("------------------------------")
+        # print(output_frame.dtype)
+        # print(output_frame)
+        # print("------------------------------")
+        # print("------------------------------")
+        # print(final_output.dtype)
+        # print(final_output)
+        
+        server.send(final_output)
 
     except KeyboardInterrupt:
         break
 
+pipeline.stop()
 server.close()
