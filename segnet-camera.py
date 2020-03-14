@@ -74,7 +74,7 @@ img_mask = jetson.utils.cudaAllocMapped(opt.width//2 * opt.height//2 * 4 * ctype
 # Configure depth and color streams
 pipeline = rs.pipeline()
 config = rs.config()
-config.enable_stream(rs.stream.color, 640, 480, rs.format.rgba8, 30)
+config.enable_stream(rs.stream.color, 1280, 720, rs.format.rgba8, 30)
 
 # Start streaming
 pipeline.start(config)
