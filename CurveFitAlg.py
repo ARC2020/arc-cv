@@ -79,12 +79,17 @@ def get_hist(img):
 
 img = cv2.imread('out-new1.jpg')
 
+finalimg = cv2.imread('out-new.jpg')
+output = finalimg.copy()
+overlay = finalimg.copy()
+
 img[np.where((img!=[200, 155, 75]).all(axis=2))] = [0, 0, 0]
 
 img = cv2.cvtColor(img, cv2.COLOR_RGB2GRAY)
 
 img[np.where((img!=0))] = 255
 
+# Pipeline for Lane Detection
 hist = get_hist(img)
 hist = exp_smoothing(hist, 0.02)
 hist = normalizedLaneDetect(hist, 0.4)
@@ -92,10 +97,16 @@ lhs, rhs = laneBound(hist)
 print(lhs, rhs)
 out = laneOut(lhs, rhs, len(hist))
 
-plt.plot(out)
-plt.show()
+# Add lane detection overlay
+alpha = 0.5
+height = img.shape[0]
+cv2.rectangle(overlay, (lhs, height-90), (rhs, 1500), (0, 0, 255), -1)
+cv2.addWeighted(overlay, alpha, output, 1-alpha, 0, output)
+
+# plt.plot(out)
+# plt.show()
     
-# cv2.imshow("Output Frame", img)
+cv2.imshow("Output Frame", output)
 
 cv2.waitKey()
 

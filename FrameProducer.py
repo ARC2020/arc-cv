@@ -9,6 +9,7 @@ import pyrealsense2 as rs
 import numpy as np
 import threading
 import cv2
+from FramePackage import FramePackage
 
 class FrameProducer(threading.Thread):
     
@@ -54,8 +55,10 @@ class FrameProducer(threading.Thread):
 
                 # Convert image to numpy array
                 color_image = np.asanyarray(color_frame.get_data())
+                depth_image = np.asanyarray(depth_frame.get_data())
                 if self.buffer != None and not self.buffer.full():
-                    self.buffer.put(color_image, False)
+                    frame_pack = FramePackage(color_image, depth_image)
+                    self.buffer.put(frame_pack, False)
                     print("FRAMEPRODUCER: Frame Deployed.")
 
         finally:

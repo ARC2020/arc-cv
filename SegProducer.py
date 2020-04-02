@@ -13,6 +13,7 @@ import os
 
 import threading
 from vidgear.gears import NetGear
+import FramePackage
 
 class SegProducer(threading.Thread):
     def __init__(self, network, width, height):
@@ -90,7 +91,8 @@ class SegProducer(threading.Thread):
                 if self.buffer == None:
                     continue
                 if not self.buffer.empty():
-                    frame = self.buffer.get_nowait()
+                    frame_pack = self.buffer.get_nowait()
+                    frame = frame_pack.getColorFrame()
                     output_ready = self.frame(frame)
                     self.server.send(output_ready)
 
