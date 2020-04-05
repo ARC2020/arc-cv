@@ -2,8 +2,8 @@ import cv2
 import numpy as np
 import threading
 
-from datatypes import FramePackage
-from modules.arc_comms import LaneData
+from datatypes.FramePackage import FramePackage
+from modules.arc_comms.LaneData import LaneData
 
 class LaneDetect():
     img = []
@@ -23,7 +23,7 @@ class LaneDetect():
 
     def normalizedLaneDetect(self, thresh):
         out = []
-        max_val = np.amax(self.a)
+        max_val = np.amax(self.a)[0]
         for val in self.a:
             if  (val/max_val) >= thresh:
                 out.append(1)

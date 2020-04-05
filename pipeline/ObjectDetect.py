@@ -3,8 +3,8 @@ import numpy as np
 import threading
 import math
 
-from datatypes import FramePackage
-from modules.arc_comms import ObjData
+from datatypes.FramePackage import FramePackage
+from modules.arc_comms.ObjData import ObjData
 
 class ObjectDetect():
     img = []
@@ -16,7 +16,7 @@ class ObjectDetect():
     def cartesian_distance(self, keypoint, pixel):
         x = keypoint.x - pixel[0]
         y = keypoint.y - pixel[1]
-        return sqrt(x*x + y*y)
+        return math.sqrt(x*x + y*y)
             
     def run(self):
         self.img = self.frame_pack.getColorFrame()
