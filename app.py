@@ -1,6 +1,6 @@
-from pipeline import SegProducer
-from pipeline import FrameProducer
-from network_dispatcher import NetworkDispatcher
+from pipeline.SegProducer import SegProducer
+from pipeline.FrameProducer import FrameProducer
+from network_dispatcher.NetworkDispatcher import NetworkDispatcher
 from queue import Queue
 
 def main():
