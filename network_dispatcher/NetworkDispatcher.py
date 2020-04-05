@@ -2,9 +2,9 @@ import threading
 
 from modules.arc_comms import NetworkPackage
 
-class FrameProducer(threading.Thread):
+class NetworkDispatcher(threading.Thread):
     
-    def __init__(self, width, height):
+    def __init__(self):
         threading.Thread.__init__(self)
         self.dispatch_pipe = None
         self.stop_condition = False

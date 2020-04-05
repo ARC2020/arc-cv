@@ -1,22 +1,22 @@
-from pipeline import SegProducer, FrameProducer
+import pipeline
+import network_dispatcher
 from queue import Queue
-from network_dispatcher import NetworkDispatcher
 
 def main():
     width = 1280
     height = 720
 
-    pipeline = Queue(5)
-    dispatch_pipeline = Queue(5)
+    pipeline_queue = Queue(5)
+    dispatch_pipeline_queue = Queue(5)
 
-    frameConsumer = SegProducer("fcn-resnet18-mhp", width, height)
-    frameProducer = FrameProducer(width, height)
-    networkDispatcher = NetworkDispatcher
+    frameConsumer = pipeline.SegProducer("fcn-resnet18-mhp", width, height)
+    frameProducer = pipeline.FrameProducer(width, height)
+    networkDispatcher = network_dispatcher.NetworkDispatcher()
 
-    frameProducer.attach_pipe(pipeline)
-    frameConsumer.attach_pipe(pipeline)
-    frameConsumer.attach_dispatch_pipe(dispatch_pipeline)
-    networkDispatcher.attach_dispatch_pipe(dispatch_pipeline)
+    frameProducer.attach_pipe(pipeline_queue)
+    frameConsumer.attach_pipe(pipeline_queue)
+    frameConsumer.attach_dispatch_pipe(dispatch_pipeline_queue)
+    networkDispatcher.attach_dispatch_pipe(dispatch_pipeline_queue)
 
     frameProducer.start()
     frameConsumer.start()
