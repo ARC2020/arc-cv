@@ -9,7 +9,8 @@ import pyrealsense2 as rs
 import numpy as np
 import threading
 import cv2
-from FramePackage import FramePackage
+
+from datatypes import FramePackage
 
 class FrameProducer(threading.Thread):
     

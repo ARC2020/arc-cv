@@ -1,5 +1,4 @@
-from SegProducer import SegProducer
-from FrameProducer import FrameProducer
+from pipeline import SegProducer, FrameProducer
 from queue import Queue
 
 def main():

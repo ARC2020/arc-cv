@@ -13,13 +13,17 @@ import os
 
 import threading
 from vidgear.gears import NetGear
-import FramePackage
+from datatypes import FramePackage
+from pipeline import LaneDetect
+from pipeline import ObjectDetect
+from modules.arc_comms import NetworkPackage
 
 class SegProducer(threading.Thread):
     def __init__(self, network, width, height):
         threading.Thread.__init__(self)
         print("SEGPRODUCER: Starting Up...")
         self.buffer = None
+        self.dispatch_pipe = None
         self.stop_condition = False
         # load the segmentation network
         self.network = network
@@ -82,7 +86,10 @@ class SegProducer(threading.Thread):
     
     def attach_pipe(self, buffer_pipe):
         self.buffer = buffer_pipe
-
+    
+    def attach_dispatch_pipe(self, dispatch_pipe):
+        self.dispatch_pipe = dispatch_pipe
+    
     def run(self):
         try:
             while True:
@@ -93,7 +100,22 @@ class SegProducer(threading.Thread):
                 if not self.buffer.empty():
                     frame_pack = self.buffer.get_nowait()
                     frame = frame_pack.getColorFrame()
+                    depth = frame_pack.getDepthFrame()
                     output_ready = self.frame(frame)
+                    pipeline_frame_pack = FramePackage(output_ready, depth)
+                    laneDetectModule = LaneDetect(pipeline_frame_pack)
+                    laneData, laneOut = laneDetectModule.run()
+                    objectDetectModule = ObjectDetect(pipeline_frame_pack)
+                    objects, objOut, objOut = objectDetectModule.run()
+                    
+                    if self.dispatch_pipe != None and not self.dispatch_pipe.full():
+                        networkPacket = NetworkPackage(laneData, objects)
+                        self.dispatch_pipe.put(networkPacket, False)
+
+                    alpha = 1
+                    cv2.addWeighted(laneOut, alpha, output_ready, 1-alpha, 0, output_ready)
+                    cv2.addWeighted(objOut, alpha, output_ready, 1-alpha, 0, output_ready)
+
                     self.server.send(output_ready)
 
                 # # Show output window
