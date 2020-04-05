@@ -10,7 +10,7 @@ import numpy as np
 import threading
 import cv2
 
-from datatypes import FramePackage
+from datatypes.FramePackage import FramePackage
 
 class FrameProducer(threading.Thread):
     

@@ -13,10 +13,10 @@ import os
 
 import threading
 from vidgear.gears import NetGear
-from datatypes import FramePackage
-from pipeline import LaneDetect
-from pipeline import ObjectDetect
-from modules.arc_comms import NetworkPackage
+from datatypes.FramePackage import FramePackage
+from pipeline.LaneDetect import LaneDetect
+from pipeline.ObjectDetect import ObjectDetect
+from modules.arc_comms.NetworkPackage import NetworkPackage
 
 class SegProducer(threading.Thread):
     def __init__(self, network, width, height):
