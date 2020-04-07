@@ -14,8 +14,8 @@ class ObjectDetect():
         self.frame_pack = frame_pack
     
     def cartesian_distance(self, keypoint, pixel):
-        x = keypoint.x - pixel[0]
-        y = keypoint.y - pixel[1]
+        x = keypoint.pt[0] - pixel[0]
+        y = keypoint.pt[1] - pixel[1]
         return math.sqrt(x*x + y*y)
             
     def run(self):
@@ -53,10 +53,10 @@ class ObjectDetect():
                     avg_depth = np.sum(depth_frame[obj_pixels])
                     count += 1
             avg_depth /= count
-            objects.append(ObjData(keypoint.x, keypoint.y, avg_depth))
+            objects.append(ObjData(keypoint.pt[0], keypoint.pt[1], keypoint._size, avg_depth))
             cv2.addText(overlay,
                         avg_depth,
-                        (keypoint.x, keypoint.y),
+                        (keypoint.pt[0], keypoint.pt[1]),
                         font,
                         fontScale,
                         fontColor,
