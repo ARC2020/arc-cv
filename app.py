@@ -10,7 +10,7 @@ def main():
     pipeline_queue = Queue(5)
     dispatch_pipeline_queue = Queue(5)
 
-    frameConsumer = SegProducer("fcn-resnet18-mhp", width, height)
+    frameConsumer = SegProducer("fcn-resnet18-deepscene", width, height)
     frameProducer = FrameProducer(width, height)
     networkDispatcher = NetworkDispatcher()
 

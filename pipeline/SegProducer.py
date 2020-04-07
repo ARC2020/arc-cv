@@ -106,7 +106,7 @@ class SegProducer(threading.Thread):
                     laneDetectModule = LaneDetect(pipeline_frame_pack)
                     laneData, laneOut = laneDetectModule.run()
                     objectDetectModule = ObjectDetect(pipeline_frame_pack)
-                    objects, objOut, objOut = objectDetectModule.run()
+                    objects, objOut = objectDetectModule.run()
                     
                     if self.dispatch_pipe != None and not self.dispatch_pipe.full():
                         networkPacket = NetworkPackage(laneData, objects)

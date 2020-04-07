@@ -32,7 +32,7 @@ class ObjectDetect():
         # self.img[np.where((self.img!=0))] = 255
 
         # Detect simple blobs
-        detector = cv2.SimpleBlobDetector()
+        detector = cv2.SimpleBlobDetector_create()
         keypoints = detector.detect(self.img)
         obj_pixels = np.where((self.img!=0))
 

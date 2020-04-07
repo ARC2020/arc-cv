@@ -14,17 +14,18 @@ class LaneDetect():
 
     def exp_smoothing(self, alpha):
         out = []
-        for i in range(len(self.img)):
+        for i in range(len(self.a)):
             if i is 0:
-                out.append(self.img[i])
+                out.append(self.a[i])
             else:
-                out.append(((alpha*self.img[i]) + (1-alpha)*out[i-1]))
+                out.append(((alpha*self.a[i]) + (1-alpha)*out[i-1]))
         return out
 
     def normalizedLaneDetect(self, thresh):
         out = []
-        max_val = np.amax(self.a)[0]
+        max_val = np.amax(self.a)
         for val in self.a:
+            # print(type(self.a), val, max_val, thresh)
             if  (val/max_val) >= thresh:
                 out.append(1)
             else:
@@ -36,10 +37,10 @@ class LaneDetect():
         polarity = 0
         last_val = 0
         for i in range(len(self.a)):
-            if a[i] != last_val:
+            if self.a[i] != last_val:
                 critical_points.append(i)
                 polarity += 1
-                last_val = a[i]
+                last_val = self.a[i]
         lhs = 0
         rhs = 0
         if polarity == 1:
@@ -86,15 +87,15 @@ class LaneDetect():
         hist = np.sum(self.img[self.img.shape[0]//2:,:], axis=0)
         return hist
     
-    def metric_convert(self, P, depth_frame):
+    def metric_convert(self, P, depth_frame, rhs):
         F = 543.45
-        D = depth_frame[depth_frame.shape[0]][rhs]
+        D = depth_frame[depth_frame.shape[0]-1][rhs]
         W = (P * D) / F
         return W
     
     def batch_convert(self, lhs, pob, rhs, depth_frame):
-        lhs = self.metric_convert(rhs-lhs, depth_frame)
-        pob = self.metric_convert(rhs-pob, depth_frame)
+        lhs = self.metric_convert(rhs-lhs, depth_frame, rhs)
+        pob = self.metric_convert(rhs-pob, depth_frame, rhs)
         return lhs, pob
         
     def run(self):
@@ -113,17 +114,18 @@ class LaneDetect():
         self.a = self.get_hist()
         self.a = self.exp_smoothing(0.02)
         self.a = self.normalizedLaneDetect(0.4)
-        lhs, rhs = self.laneBound()
-        # print(lhs, rhs)
-        # out = self.laneOut(lhs, rhs, len(self.a))
+        lhs_pixel, rhs_pixel = self.laneBound()
+        # print(lhs_pixel, rhs_pixel)
+        # out = self.laneOut(lhs_pixel, rhs_pixel, len(self.a))
 
         # Add lane detection overlay
         alpha = 0.5
         height = self.img.shape[0]
-        cv2.rectangle(overlay, (lhs, height-90), (rhs, 1500), (0, 0, 255), -1)
+        cv2.rectangle(overlay, (lhs_pixel, height-90), (rhs_pixel, 500), (0, 0, 255), -1)
         cv2.addWeighted(overlay, alpha, output, 1-alpha, 0, output)
 
-        lhs, pob = self.batch_convert(lhs, self.img[0]/2, rhs, depth_frame)
-        laneData = LaneData(lhs, pob)
+        pob_pixel = self.img.shape[1]/2
+        lhs, pob = self.batch_convert(lhs_pixel, pob_pixel, rhs_pixel, depth_frame)
+        laneData = LaneData(lhs, pob, lhs_pixel, pob_pixel)
 
         return laneData, output
