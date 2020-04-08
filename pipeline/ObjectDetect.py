@@ -56,15 +56,9 @@ class ObjectDetect():
 
             if count != 0:
                 avg_depth /= count
-
-            objects.append(ObjData(keypoint.pt[0], keypoint.pt[1], keypoint.size, avg_depth))
-            cv2.addText(overlay,
-                        avg_depth,
-                        (keypoint.pt[0], keypoint.pt[1]),
-                        font,
-                        fontScale,
-                        fontColor,
-                        lineType)
+                objects.append(ObjData(keypoint.pt[0], keypoint.pt[1], keypoint.size, avg_depth))
+                print(overlay, str(int(avg_depth*100)), keypoint.pt, font, fontScale, fontColor, lineType)
+                cv2.putText(overlay, str(int(avg_depth*100)), keypoint.pt, font, fontScale, fontColor, lineType)
     
         # alpha = 1
         # cv2.addWeighted(overlay, alpha, output, 1-alpha, 0, output)

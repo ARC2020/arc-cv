@@ -7,8 +7,8 @@ def main():
     width = 1280
     height = 720
 
-    pipeline_queue = Queue(5)
-    dispatch_pipeline_queue = Queue(5)
+    pipeline_queue = Queue(1000)
+    dispatch_pipeline_queue = Queue(1000)
 
     frameConsumer = SegProducer("fcn-resnet18-deepscene", width, height)
     frameProducer = FrameProducer(width, height)
