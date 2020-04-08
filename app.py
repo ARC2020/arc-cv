@@ -33,6 +33,7 @@ def main():
     frameProducer.stop()
     frameProducer.join()
     print("CV-APP: All Threads Halted. Exiting...")
+    exit()
     
 
 if __name__ == "__main__":
