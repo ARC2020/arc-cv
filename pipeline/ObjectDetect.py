@@ -18,11 +18,11 @@ class ObjectDetect():
         y = keypoint.pt[1] - pixel[1]
         return math.sqrt(x*x + y*y)
             
-    def run(self):
+    def run(self, overlay):
         self.img = self.frame_pack.getColorFrame()
         depth_frame = self.frame_pack.getDepthFrame()
-        overlay = self.img.copy()
-        output = self.img.copy()
+        # overlay = self.img.copy()
+        # output = self.img.copy()
 
         # TODO: Replace colour code with that of obstacle class
         self.img[np.where((self.img!=[200, 155, 75]).all(axis=2))] = [0, 0, 0]
@@ -40,7 +40,7 @@ class ObjectDetect():
         font                   = cv2.FONT_HERSHEY_SIMPLEX
         fontScale              = 1
         fontColor              = (255,255,255)
-        lineType               = 2
+        lineType               = 1
 
         objects = []
 
@@ -58,17 +58,18 @@ class ObjectDetect():
                 avg_depth /= count
 
             objects.append(ObjData(keypoint.pt[0], keypoint.pt[1], keypoint.size, avg_depth))
-            # cv2.putText(overlay,
-            #             avg_depth,
-            #             (keypoint.pt[0], keypoint.pt[1]),
-            #             font,
-            #             fontScale,
-            #             fontColor)
+            cv2.addText(overlay,
+                        avg_depth,
+                        (keypoint.pt[0], keypoint.pt[1]),
+                        font,
+                        fontScale,
+                        fontColor,
+                        lineType)
     
-        alpha = 1
-        cv2.addWeighted(overlay, alpha, output, 1-alpha, 0, output)
+        # alpha = 1
+        # cv2.addWeighted(overlay, alpha, output, 1-alpha, 0, output)
                 
-        return objects, output
+        return objects, overlay
 
 
         

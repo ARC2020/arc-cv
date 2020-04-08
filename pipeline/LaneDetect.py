@@ -101,11 +101,11 @@ class LaneDetect():
         pob = self.metric_convert(rhs-pob, depth_frame, rhs)
         return lhs, pob
         
-    def run(self):
+    def run(self, overlay):
         self.img = self.frame_pack.getColorFrame()
         depth_frame = self.frame_pack.getDepthFrame()
-        overlay = self.img.copy()
-        output = self.img.copy()
+        # overlay = self.img.copy()
+        # output = self.img.copy()
 
         self.img[np.where((self.img!=[200, 155, 75]).all(axis=2))] = [0, 0, 0]
 
@@ -125,10 +125,10 @@ class LaneDetect():
         alpha = 0.5
         height = self.img.shape[0]
         cv2.rectangle(overlay, (lhs_pixel, height-90), (rhs_pixel, 500), (0, 0, 255), -1)
-        cv2.addWeighted(overlay, alpha, output, 1-alpha, 0, output)
+        # cv2.addWeighted(overlay, alpha, output, 1-alpha, 0, output)
 
         pob_pixel = self.img.shape[1]/2
         lhs, pob = self.batch_convert(lhs_pixel, pob_pixel, rhs_pixel, depth_frame)
         laneData = LaneData(lhs, pob, lhs_pixel, pob_pixel)
 
-        return laneData, output
+        return laneData, overlay

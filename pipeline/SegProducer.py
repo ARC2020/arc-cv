@@ -104,9 +104,9 @@ class SegProducer(threading.Thread):
                     output_ready = self.frame(frame)
                     pipeline_frame_pack = FramePackage(output_ready, depth)
                     laneDetectModule = LaneDetect(pipeline_frame_pack)
-                    laneData, laneOut = laneDetectModule.run()
+                    laneData, laneOut = laneDetectModule.run(output_ready)
                     objectDetectModule = ObjectDetect(pipeline_frame_pack)
-                    objects, objOut = objectDetectModule.run()
+                    objects, objOut = objectDetectModule.run(laneOut)
                     
                     if self.dispatch_pipe != None and not self.dispatch_pipe.full():
                         networkPacket = NetworkPackage(laneData, objects)
@@ -116,7 +116,7 @@ class SegProducer(threading.Thread):
                     # cv2.addWeighted(laneOut, alpha, output_ready, 1-alpha, 0, output_ready)
                     # cv2.addWeighted(objOut, alpha, output_ready, 1-alpha, 0, output_ready)
 
-                    self.server.send(output_ready)
+                    self.server.send(objOut)
 
                 # # Show output window
                 # cv2.imshow("Output Frame", output_ready)
