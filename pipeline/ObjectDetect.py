@@ -46,13 +46,17 @@ class ObjectDetect():
 
         for keypoint in keypoints:
             count = 0
+            avg_depth = -1
             for pixel in obj_pixels:
                 distance = self.cartesian_distance(keypoint, pixel)
                 if (distance < keypoint.size):
                     # Get average depth to obstacle from pixels
                     avg_depth = np.sum(depth_frame[obj_pixels])
                     count += 1
-            avg_depth /= count
+
+            if count != 0:
+                avg_depth /= count
+
             objects.append(ObjData(keypoint.pt[0], keypoint.pt[1], keypoint.size, avg_depth))
             cv2.addText(overlay,
                         avg_depth,

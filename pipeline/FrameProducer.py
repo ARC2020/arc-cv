@@ -56,9 +56,9 @@ class FrameProducer(threading.Thread):
 
                 # Convert image to numpy array
                 color_image = np.asanyarray(color_frame.get_data())
-                depth_image = np.asanyarray(depth_frame.get_data())
+                # depth_image = np.asanyarray(depth_frame.get_data())
                 if self.buffer != None and not self.buffer.full():
-                    frame_pack = FramePackage(color_image, depth_image)
+                    frame_pack = FramePackage(color_image, depth_frame)
                     self.buffer.put(frame_pack, False)
                     print("FRAMEPRODUCER: Frame Deployed.")
 

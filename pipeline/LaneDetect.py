@@ -90,7 +90,10 @@ class LaneDetect():
     
     def metric_convert(self, P, depth_frame, rhs):
         F = 1.93
-        D = depth_frame.get_distance(719, rhs-1)
+        if (rhs >= 1280):
+            rhs = 1279
+        print("-----------------------------------------------", rhs-1, 719)
+        D = depth_frame.get_distance(rhs, 719)
         W = (P * D) / F
         return W
     
@@ -102,6 +105,7 @@ class LaneDetect():
     def run(self):
         self.img = self.frame_pack.getColorFrame()
         depth_frame = self.frame_pack.getDepthFrame()
+        print("---------------------------------------------", type(depth_frame))
         overlay = self.img.copy()
         output = self.img.copy()
 
