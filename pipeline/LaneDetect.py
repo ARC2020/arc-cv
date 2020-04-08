@@ -90,7 +90,7 @@ class LaneDetect():
     
     def metric_convert(self, P, depth_frame, rhs):
         F = 1.93
-        D = depth_frame.get_distance(depth_frame.shape[0]-1, rhs-1)
+        D = depth_frame.get_distance(719, rhs-1)
         W = (P * D) / F
         return W
     
