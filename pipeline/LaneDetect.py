@@ -1,6 +1,7 @@
 import cv2
 import numpy as np
 import threading
+import pyrealsense2
 
 from datatypes.FramePackage import FramePackage
 from modules.arc_comms.LaneData import LaneData
@@ -88,8 +89,8 @@ class LaneDetect():
         return hist
     
     def metric_convert(self, P, depth_frame, rhs):
-        F = 543.45
-        D = depth_frame[depth_frame.shape[0]-1][rhs-1]
+        F = 1.93
+        D = depth_frame.get_distance(depth_frame.shape[0]-1, rhs-1)
         W = (P * D) / F
         return W
     
