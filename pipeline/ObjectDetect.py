@@ -25,7 +25,7 @@ class ObjectDetect():
         # output = self.img.copy()
 
         # TODO: Replace colour code with that of obstacle class
-        self.img[np.where((self.img!=[200, 155, 75]).all(axis=2))] = [0, 0, 0]
+        self.img[np.where((self.img!=[255, 185, 0]).all(axis=2))] = [0, 0, 0]
 
         self.img = cv2.cvtColor(self.img, cv2.COLOR_RGB2GRAY)
 
