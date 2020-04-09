@@ -54,7 +54,7 @@ class FrameProducer(threading.Thread):
         try:
             # Start streaming
             # self.pipeline.start(self.config)
-            frameFile = "recording2.pickle"
+            frameFile = "sample0.pickle"
             print("FRAMEPRODUCER: Loading capture....")
             fpList = self.unpickle(frameFile)
             print("FRAMEPRODUCER: Capture loaded.")
