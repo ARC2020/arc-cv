@@ -115,7 +115,8 @@ class SegProducer(threading.Thread):
                     objects, objOut = objectDetectModule.run(laneOut)
                     
                     if self.dispatch_pipe != None and not self.dispatch_pipe.full():
-                        networkPacket = NetworkPackage(laneData, objects, objOut)
+                        print(type(laneData), type(objects), type(objOut))
+                        networkPacket = NetworkPackage(objOut, laneData, objects)
                         self.networkpack_buffer.append(networkPacket)
                         self.dispatch_pipe.put(networkPacket, False)
 
