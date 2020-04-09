@@ -23,4 +23,4 @@ class NetworkDispatcher(threading.Thread):
                     continue
                 if not self.dispatch_pipe.empty():
                     networkPackage = self.dispatch_pipe.get_nowait()
-                    # print(networkPackage)
+                    print(networkPackage)
