@@ -109,7 +109,7 @@ class SegProducer(threading.Thread):
                     objects, objOut = objectDetectModule.run(laneOut)
                     
                     if self.dispatch_pipe != None and not self.dispatch_pipe.full():
-                        networkPacket = NetworkPackage(laneData, objects)
+                        networkPacket = NetworkPackage(laneData, objects, objOut)
                         self.dispatch_pipe.put(networkPacket, False)
 
                     # alpha = 1

@@ -60,7 +60,7 @@ class FrameProducer(threading.Thread):
                 if self.buffer != None and not self.buffer.full():
                     frame_pack = FramePackage(color_image, depth_frame)
                     self.buffer.put(frame_pack, False)
-                    print("FRAMEPRODUCER: Frame Deployed.")
+                    # print("FRAMEPRODUCER: Frame Deployed.")
 
         finally:
             self.pipeline.stop()
