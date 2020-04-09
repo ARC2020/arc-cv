@@ -10,6 +10,7 @@ import numpy as np
 import ctypes
 import sys
 import os
+import pickle
 
 import threading
 from vidgear.gears import NetGear
@@ -22,6 +23,7 @@ class SegProducer(threading.Thread):
     def __init__(self, network, width, height):
         threading.Thread.__init__(self)
         print("SEGPRODUCER: Starting Up...")
+        self.networkpack_buffer = []
         self.buffer = None
         self.dispatch_pipe = None
         self.stop_condition = False
@@ -110,6 +112,7 @@ class SegProducer(threading.Thread):
                     
                     if self.dispatch_pipe != None and not self.dispatch_pipe.full():
                         networkPacket = NetworkPackage(laneData, objects, objOut)
+                        self.networkpack_buffer.append(networkPacket)
                         self.dispatch_pipe.put(networkPacket, False)
 
                     # alpha = 1
@@ -131,3 +134,11 @@ class SegProducer(threading.Thread):
             # cv2.destroyAllWindows()
             self.server.close()
             print("SEGPRODUCER: Shutting Down...")
+
+            recordingFileName = 'output.pickle'
+    
+            try:
+                with open(recordingFileName, 'wb') as pickleOut: #overwrites existing file
+                    pickle.dump(self.networkpack_buffer, pickleOut, pickle.HIGHEST_PROTOCOL)
+            except pickle.PicklingError as e:
+                print('An exception occured: ', e)
