@@ -118,7 +118,7 @@ class SegProducer(threading.Thread):
                         print(type(laneData), type(objects), type(objOut))
                         networkPacket = NetworkPackage(objOut, laneData, objects)
                         self.networkpack_buffer.append(networkPacket)
-                        self.dispatch_pipe.put(networkPacket, False)
+                        # self.dispatch_pipe.put(networkPacket, False)
 
                     # alpha = 1
                     # cv2.addWeighted(laneOut, alpha, output_ready, 1-alpha, 0, output_ready)

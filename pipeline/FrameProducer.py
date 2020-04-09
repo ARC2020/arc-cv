@@ -60,26 +60,27 @@ class FrameProducer(threading.Thread):
             print("FRAMEPRODUCER: Capture loaded.")
 
             print("FRAMEPRODUCER: Stream Initialized.")
-            while True:
-                if self.stop_condition or not fpList:
-                    break
-                # Wait for a coherent pair of frames: depth and color
-                # frames = self.pipeline.wait_for_frames()
-                # depth_frame = frames.get_depth_frame()
-                # color_frame = frames.get_color_frame()
+            # while True:
+            #     if self.stop_condition or not fpList:
+            #         break
+            #     # Wait for a coherent pair of frames: depth and color
+            #     # frames = self.pipeline.wait_for_frames()
+            #     # depth_frame = frames.get_depth_frame()
+            #     # color_frame = frames.get_color_frame()
 
-                # if not depth_frame or not color_frame:
-                # if not color_frame or not depth_frame:
-                #     continue
+            #     # if not depth_frame or not color_frame:
+            #     # if not color_frame or not depth_frame:
+            #     #     continue
 
-                # Convert image to numpy array
-                # color_image = np.asanyarray(color_frame.get_data())
-                # depth_image = np.asanyarray(depth_frame.get_data())
+            #     # Convert image to numpy array
+            #     # color_image = np.asanyarray(color_frame.get_data())
+            #     # depth_image = np.asanyarray(depth_frame.get_data())
+            for frame_pack in fpList:
                 if self.buffer != None and not self.buffer.full():
                     # frame_pack = FramePackage(color_image, depth_frame)
-                    frame_pack = fpList.pop(0)
+                    # frame_pack = fpList.pop(0)
                     print("Popping...")
-                    self.buffer.put(frame_pack, False)
+                    self.buffer.put(frame_pack, True)
                     # print("FRAMEPRODUCER: Frame Deployed.")
 
         finally:
