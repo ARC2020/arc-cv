@@ -33,7 +33,7 @@ class SegProducer(threading.Thread):
         print("SEGPRODUCER: Network Initialized.")
 
         options = {'flag' : 0, 'copy' : False, 'track' : True}
-        self.server = NetGear(address = '192.168.0.14', colorspace='COLORBGR2RGB', port = '5454', protocol = 'tcp',  pattern = 0, receive_mode = False, logging = True, **options)
+        self.server = NetGear(address = '192.168.1.17', colorspace='COLORBGR2RGB', port = '5454', protocol = 'tcp',  pattern = 0, receive_mode = False, logging = True, **options)
 
 
         # set the alpha blending value
