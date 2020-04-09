@@ -12,7 +12,7 @@ class NetworkDispatcher(threading.Thread):
     def attach_dispatch_pipe(self, dispatch_pipe):
         self.dispatch_pipe = dispatch_pipe
     
-    def stop():
+    def stop(self):
         self.stop_condition = True
 
     def run(self):

@@ -103,7 +103,11 @@ class SegProducer(threading.Thread):
                     frame_pack = self.buffer.get_nowait()
                     frame = frame_pack.getColorFrame()
                     depth = frame_pack.getDepthFrame()
-                    output_ready = self.frame(frame)
+                    try:
+                        output_ready = self.frame(frame)
+                    except Exception as e:
+                        self.server.send(frame)
+                        continue
                     pipeline_frame_pack = FramePackage(output_ready, depth)
                     laneDetectModule = LaneDetect(pipeline_frame_pack)
                     laneData, laneOut = laneDetectModule.run(output_ready)

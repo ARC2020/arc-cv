@@ -32,6 +32,8 @@ def main():
     frameConsumer.join()
     frameProducer.stop()
     frameProducer.join()
+    networkDispatcher.stop()
+    networkDispatcher.join()
     print("CV-APP: All Threads Halted. Exiting...")
     exit()
     
