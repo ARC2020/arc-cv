@@ -5,7 +5,7 @@ import cv2
 options = {'flag' : 0, 'copy' : False, 'track' : False}
 
 #change following IP address '192.168.x.xxx' with yours
-client = NetGear(address = '192.168.1.17', port = '5454', protocol = 'tcp',  pattern = 0, receive_mode = True, logging = True, **options) #Define netgear client at Server IP address.
+client = NetGear(address = '192.168.0.14', port = '5454', protocol = 'tcp',  pattern = 0, receive_mode = True, logging = True, **options) #Define netgear client at Server IP address.
 
 # infinite loop
 while True:
