@@ -26,7 +26,7 @@ class LaneDetect():
         out = []
         max_val = np.amax(self.a)
         for val in self.a:
-            # print(type(self.a), val, max_val, thresh)
+            print(type(self.a), val, max_val, thresh)
             if  (val/max_val) >= thresh:
                 out.append(1)
             else:
