@@ -4,7 +4,7 @@ class FramePackage:
 
     def __init__(self, color, depth):
         self.color_frame = color.copy()
-        print("---------------------------------------------", type(depth))
+        # print("---------------------------------------------", type(depth))
         self.depth_frame = depth
     
     def getColorFrame(self):
