@@ -89,17 +89,17 @@ class LaneDetect():
         return hist
     
     def metric_convert(self, P, depth_frame, rhs):
-        F = 1.93
+        F = 0.193
         if (rhs >= 1280):
             rhs = 1279
-        D = depth_frame[719][rhs]
+        D = depth_frame[360][rhs]
         W = (P * D) / F
         return W
     
     def batch_convert(self, lhs, pob, rhs, depth_frame):
-        lhs = self.metric_convert(rhs-lhs, depth_frame, rhs)
-        pob = self.metric_convert(rhs-pob, depth_frame, rhs)
-        return lhs, pob
+        lhs_out = self.metric_convert(rhs-lhs, depth_frame, rhs)
+        pob_out = self.metric_convert(rhs-pob, depth_frame, rhs)
+        return lhs_out, pob_out
         
     def run(self, overlay):
         self.img = self.frame_pack.getColorFrame()
